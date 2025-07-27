@@ -5,11 +5,18 @@ Author: Đỗ Hoàng Minh
 Date: 2025-04-25
 Tools Used: SQL (BigQuery)
 📑 Table of Contents:
+
 1.[Background & Overview](#-background--overview)
+
 2.[📂 Dataset Description & Data Structure](#-dataset-description--data-structure)
+
 3.[🔎 Final Conclusion & Recommendations](#-final-conclusion--recommendations)
+
+
 ##📌 Background & Overview
+
 ###Objective:
+
 ###📖 What is this project about? What Business Question will it solve?
 
  ✅ This project uses SQL to analyze ecommerce website data, including traffic, user sessions, and transactions.
@@ -17,17 +24,20 @@ Tools Used: SQL (BigQuery)
  ✅ Which traffic sources drive the most visits, revenue, and conversions
  ✅How do users move through the conversion funnel from product view to purchase
 
+
 ### 👤 Who is this project for? 
 
 -Decision-makers & ecommerce stakeholders
 -Data analysts & business analysts
 
 ##📂 Dataset Description & Data Structure
+
 - Source: Public dataset from [google_analytics_sample – BigQuery] https://console.cloud.google.com/bigquery?ws=!1m5!1m4!4m3!1sbigquery-public-data!2sgoogle_analytics_sample!3sga_sessions_20170801
 - Size: Over 1 million rows across multiple tables (Sessions, Products, Transactions, etc.)
 - Format : BigQuery (cloud SQL-based format)
 
 ### 📊 Data Structure & Relationships
+
 #### 1️⃣ Tables Used: 
 -Total Tables Used: 4
 -Main Table: ga_sessions_2017*
@@ -37,6 +47,7 @@ Tools Used: SQL (BigQuery)
 + hits.eCommerceAction
 
 #### 2️⃣ Table Schema & Data Snapshot :
+
 Table : ga_sessions_2017* (from BigQuery public dataset)
 
 | Column Name                       | Data Type | Description                                    |
@@ -55,6 +66,7 @@ Table : ga_sessions_2017* (from BigQuery public dataset)
 
 
 ## ⚒️ Main Process :
+
 1️⃣ Data Cleaning & Preprocessing
 
 -Filtered sessions from relevant time periods (Jan–Jul 2017).
@@ -72,12 +84,14 @@ Table : ga_sessions_2017* (from BigQuery public dataset)
 -Extracted actionable metrics such as bounce rate, conversion funnel, revenue by source, etc.
 
 ## Task 1: Calculate total visit, pageview, transaction for Jan, Feb and March 2017 
+
 -Queried the ga_sessions_2017* table.
 -Used FORMAT_DATE() and GROUP BY month to aggregate visit, pageview, and transaction data.
 -Order by month
 <img width="651" height="109" alt="image" src="https://github.com/user-attachments/assets/5d05f130-89d1-4d46-995b-e356b42bd5fc" />
 
 ## Task 2: Bounce rate per traffic source in July 2017
+
 -Bounce_rate = num_bounce/total_visit
 -Used COUNT(totals.visits) and SUM(totals.bounces) to compute bounce rate by source
 -Grouped by trafficSource.source, ordered by number of visits in descending order
@@ -86,6 +100,7 @@ Table : ga_sessions_2017* (from BigQuery public dataset)
 <img width="630" height="238" alt="image" src="https://github.com/user-attachments/assets/ba4e642a-5ae3-4f62-a15c-6e4494e08031" />
 
 ## Task 3: Revenue by traffic source by week, by month in June 2017
+
 -Accessed hits.product.productRevenue using UNNEST(hits) and UNNEST(product)
 -Used FORMAT_DATE() to group by week and month
 -Combined both weekly and monthly outputs using UNION ALL
@@ -94,6 +109,7 @@ Table : ga_sessions_2017* (from BigQuery public dataset)
 <img width="784" height="237" alt="image" src="https://github.com/user-attachments/assets/ba74316e-395b-4f9e-836a-0466ab25e71f" />
 
 ## Task 4: Average number of pageviews by purchaser type (purchasers vs non-purchasers) in June, July 2017.
+
 -Created two CTEs: one for purchasers (productRevenue IS NOT NULL) and one for non-purchasers (transactions IS NULL).
 -Calculated SUM(pageviews) / COUNT(DISTINCT fullVisitorId) for both types.
 -Joined both CTEs to compare.
@@ -101,18 +117,21 @@ Table : ga_sessions_2017* (from BigQuery public dataset)
 <img width="509" height="74" alt="image" src="https://github.com/user-attachments/assets/897694af-489b-43c3-a3d2-f87f63225284" />
 
 ## Task 5:  Average number of transactions per user that made a purchase in July 2017
+
 -Filtered sessions with purchases.
 -Calculated total transactions and number of unique purchasing users.
 -Divided transactions / users.
 <img width="385" height="48" alt="image" src="https://github.com/user-attachments/assets/d7a5db63-6d37-49a9-b277-8752a923e89a" />
 
 ## Task 6: : Average amount of money spent per session. Only include purchaser data in July 2017
+
 -Filtered sessions where productRevenue IS NOT NULL.
 -Divided total revenue by total visits within July.
 -Used a subquery to simplify calculation and return 1 row per month.
 <img width="384" height="50" alt="image" src="https://github.com/user-attachments/assets/d6348fa6-ea02-416a-b71b-4443ce32ea55" />
 
 ## Task 7:  Other products purchased by customers who purchased product "YouTube Men's Vintage Henley" in July 2017. Output should show product name and the quantity was ordered.
+
 -Created two CTEs:
    + One to get all users who purchased the target product.
    + One to list other products those users purchased.
@@ -122,6 +141,7 @@ Table : ga_sessions_2017* (from BigQuery public dataset)
 <img width="385" height="247" alt="image" src="https://github.com/user-attachments/assets/31f2d367-3e8a-4796-95b3-4fe17fbae262" />
 
 ## Task 8: Calculate cohort map from product view to addtocart to purchase in Jan, Feb and March 2017. 
+
 -Created three CTEs: one for product views, one for add-to-cart, one for purchases.
 -Each filtered by eCommerceAction.action_type = 2 / 3 / 6.(hits.eCommerceAction.action_type = '2' is view product page; hits.eCommerceAction.action_type = '3' is add to cart; hits.eCommerceAction.action_type = '6' is purchase)
 -Joined all three by month and calculated:
@@ -131,6 +151,7 @@ Table : ga_sessions_2017* (from BigQuery public dataset)
 <img width="898" height="104" alt="image" src="https://github.com/user-attachments/assets/f62ed06a-32cf-4dc0-a8f5-4f3d58d40a77" />
 
 ## 🔎 Final Conclusion & Recommendations
+
 Based on the insights and findings above, we would recommend the Ecommerce & Marketing team to consider the following:
 📌 Key Takeaways:
 
