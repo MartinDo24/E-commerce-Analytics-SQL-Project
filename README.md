@@ -16,7 +16,7 @@ Tools Used: SQL (BigQuery)
 3.[🔎 Final Conclusion & Recommendations](#-final-conclusion--recommendations)
 
 
-##📌 Background & Overview
+## 📌 Background & Overview
 
 ###Objective:
 
@@ -37,7 +37,7 @@ Tools Used: SQL (BigQuery)
 
 -Data analysts & business analysts
 
-##📂 Dataset Description & Data Structure
+## 📂 Dataset Description & Data Structure
 
 - Source: Public dataset from [google_analytics_sample – BigQuery] https://console.cloud.google.com/bigquery?ws=!1m5!1m4!4m3!1sbigquery-public-data!2sgoogle_analytics_sample!3sga_sessions_20170801
 
