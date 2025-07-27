@@ -1,4 +1,4 @@
-# E-commerce-Analytics-SQL-Project
+# E-commerce-Analytics SQL Project - Visitor Behavior & Conversion Funnel
 <img width="1024" height="1024" alt="image" src="https://github.com/user-attachments/assets/358e12da-810e-4b35-a892-0260be8e7c4b" />
 
 Author: Đỗ Hoàng Minh
