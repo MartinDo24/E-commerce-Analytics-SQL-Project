@@ -9,7 +9,7 @@ Tools Used: SQL (BigQuery)
 
 ##📑 Table of Contents:
 
-1.[Background & Overview](#-background--overview)
+1.[📌Background & Overview](#-background--overview)
 
 2.[📂 Dataset Description & Data Structure](#-dataset-description--data-structure)
 
