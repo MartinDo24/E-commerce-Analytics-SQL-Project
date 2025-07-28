@@ -43,7 +43,7 @@ Tools Used: SQL (BigQuery)
 
 - Size: Over 1 million rows across multiple tables (Sessions, Products, Transactions, etc.)
 
-- Format : BigQuery (cloud SQL-based format)
+- Format : E-commerce-Analytics.sql
 
 ### 📊 Data Structure & Relationships
 
