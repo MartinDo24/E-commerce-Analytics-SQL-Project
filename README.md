@@ -61,7 +61,7 @@ Tools Used: SQL (BigQuery)
 
 + hits.eCommerceAction
 
-#### 2️⃣ Table Schema & Data Snapshot :
+#### 2️⃣ Table Schema & Data Snapshot
 
 Table : ga_sessions_2017* (from BigQuery public dataset)
 
