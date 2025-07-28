@@ -177,6 +177,7 @@ Table : ga_sessions_2017* (from BigQuery public dataset)
    + One to get all users who purchased the target product.
    
    + One to list other products those users purchased.
+
 -Joined both on fullVisitorId and aggregated quantity by product name.
 
 <img width="386" height="249" alt="image" src="https://github.com/user-attachments/assets/fc3c127b-b51e-4acd-be23-d06e1f165ab4" />
