@@ -18,9 +18,9 @@ Tools Used: SQL (BigQuery)
 
 ## 📌 Background & Overview
 
-###Objective:
+### Objective:
 
-###📖 What is this project about? What Business Question will it solve?
+### 📖 What is this project about? What Business Question will it solve?
 
  ✅ This project uses SQL to analyze ecommerce website data, including traffic, user sessions, and transactions.
  
