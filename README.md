@@ -33,9 +33,9 @@ Tools Used: SQL (BigQuery)
 
 ### 👤 Who is this project for? 
 
--Decision-makers & ecommerce stakeholders
+-Decision-makers & ecommerce stakeholders looking to improve traffic efficiency and sales performance.
 
--Data analysts & business analysts
+-Data analysts & business analysts want to analyze user behavior and conversion metrics
 
 ## 📂 Dataset Description & Data Structure
 
