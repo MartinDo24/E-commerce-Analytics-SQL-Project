@@ -49,8 +49,6 @@ Tools Used: SQL (BigQuery)
 
 #### 1️⃣ Tables Used: 
 
--Total Tables Used: 4
-
 -Main Table: ga_sessions_2017*
 
 -Nested Tables (via UNNEST):
