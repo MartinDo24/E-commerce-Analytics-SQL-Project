@@ -1,6 +1,6 @@
 # E-commerce-User-Behavior-Analyst-SQL-Project
 
-<img width="1024" height="1024" alt="image" src="https://github.com/user-attachments/assets/358e12da-810e-4b35-a892-0260be8e7c4b" />
+<img width="980" height="980" alt="image" src="https://github.com/user-attachments/assets/06974c99-d43a-484a-bf31-c83d7a8c01bc" />
 
 Author: Đỗ Hoàng Minh
 
@@ -14,7 +14,7 @@ Tools Used: SQL (BigQuery)
 
 2.[📂 Dataset Description & Data Structure](#-dataset-description--data-structure)
 
-3.[🔎 Final Conclusion & Recommendations](#-final-conclusion--recommendations)
+3.[🔎 Final ](#-final-conclusion--recommendations)
 
 
 ## 📌 Background & Overview
@@ -113,7 +113,13 @@ Table : ga_sessions_2017* (from BigQuery public dataset)
 
 -Order by month
 
+-Traffic & Transaction Trends: Help stakeholders assess whether marketing efforts are driving consistent traffic and if that traffic is converting to revenue.
+
 <img width="651" height="109" alt="image" src="https://github.com/user-attachments/assets/5d05f130-89d1-4d46-995b-e356b42bd5fc" />
+
+[Q1] Traffic & Transactions Trend (Jan–Mar 2017):
+
+The website has stable traffic in Q1, increasing traffic and conversions showing positive signs and in the right direction.
 
 ## Task 2: Bounce rate per traffic source in July 2017
 
@@ -127,6 +133,9 @@ Table : ga_sessions_2017* (from BigQuery public dataset)
 
 <img width="630" height="238" alt="image" src="https://github.com/user-attachments/assets/ba4e642a-5ae3-4f62-a15c-6e4494e08031" />
 
+[Q2] Bounce Rate by Source (Jul 2017):
+Some traffic sources like partners and bing had extremely high bounce rates (>70%), indicating poor landing page experience or irrelevant targeting.
+
 ## Task 3: Revenue by traffic source by week, by month in June 2017
 
 -Accessed hits.product.productRevenue using UNNEST(hits) and UNNEST(product)
@@ -139,6 +148,9 @@ Table : ga_sessions_2017* (from BigQuery public dataset)
 
 <img width="784" height="237" alt="image" src="https://github.com/user-attachments/assets/ba74316e-395b-4f9e-836a-0466ab25e71f" />
 
+[Q3] Revenue by Source (Jun 2017):
+Google and direct traffic brought in the highest revenue. However, weekly trends showed fluctuations—pointing to possible inconsistency in ad or campaign performance.
+
 ## Task 4: Average number of pageviews by purchaser type (purchasers vs non-purchasers) in June, July 2017.
 
 -Created two CTEs: one for purchasers (productRevenue IS NOT NULL) and one for non-purchasers (transactions IS NULL).
@@ -148,6 +160,9 @@ Table : ga_sessions_2017* (from BigQuery public dataset)
 -Joined both CTEs to compare.
 
 <img width="509" height="74" alt="image" src="https://github.com/user-attachments/assets/897694af-489b-43c3-a3d2-f87f63225284" />
+
+[Q4] Pageviews by User Type:
+Purchasers viewed significantly more pages per session than non-purchasers. This suggests that deeper engagement leads to higher conversion.
 
 ## Task 5:  Average number of transactions per user that made a purchase in July 2017
 
@@ -159,6 +174,10 @@ Table : ga_sessions_2017* (from BigQuery public dataset)
 
 <img width="385" height="48" alt="image" src="https://github.com/user-attachments/assets/d7a5db63-6d37-49a9-b277-8752a923e89a" />
 
+[Q5] Avg. Transactions per Purchaser (Jul 2017):
+Most users made only one transaction, indicating that repeat purchases are low. Retention or loyalty campaigns could be considered.
+
+
 ## Task 6: : Average amount of money spent per session. Only include purchaser data in July 2017
 
 -Filtered sessions where productRevenue IS NOT NULL.
@@ -168,6 +187,9 @@ Table : ga_sessions_2017* (from BigQuery public dataset)
 -Used a subquery to simplify calculation and return 1 row per month.
 
 <img width="384" height="50" alt="image" src="https://github.com/user-attachments/assets/d6348fa6-ea02-416a-b71b-4443ce32ea55" />
+
+[Q6] Avg. Revenue per Session (Jul 2017):
+The average amount spent per session among purchasers was meaningful but left room for upselling or bundle strategies.
 
 ## Task 7:  Other products purchased by customers who purchased product "YouTube Men's Vintage Henley" in July 2017. Output should show product name and the quantity was ordered.
 
@@ -183,6 +205,9 @@ Table : ga_sessions_2017* (from BigQuery public dataset)
 
 <img width="385" height="247" alt="image" src="https://github.com/user-attachments/assets/31f2d367-3e8a-4796-95b3-4fe17fbae262" />
 
+[Q7] Co-purchased Products with “Henley”:
+Users who purchased “YouTube Men’s Vintage Henley” also bought several related items. This presents an opportunity for bundling or personalized recommendation.
+
 ## Task 8: Calculate cohort map from product view to addtocart to purchase in Jan, Feb and March 2017. 
 
 -Created three CTEs: one for product views, one for add-to-cart, one for purchases.
@@ -197,34 +222,43 @@ Table : ga_sessions_2017* (from BigQuery public dataset)
 
 <img width="898" height="104" alt="image" src="https://github.com/user-attachments/assets/f62ed06a-32cf-4dc0-a8f5-4f3d58d40a77" />
 
-## 🔎 Final Conclusion & Recommendations
-
-Based on the insights and findings above, we would recommend the Ecommerce & Marketing team to consider the following:
-
-📌 Key Takeaways:
-
--[Q1] Traffic & Transactions Trend (Jan–Mar 2017):
-Website experienced stable traffic volume across Q1, but transactions did not increase proportionally, suggesting potential drop-offs or low conversion.
-
--[Q2] Bounce Rate by Source (Jul 2017):
-Some traffic sources like partners and bing had extremely high bounce rates (>70%), indicating poor landing page experience or irrelevant targeting.
-
--[Q3] Revenue by Source (Jun 2017):
-Google and direct traffic brought in the highest revenue. However, weekly trends showed fluctuations—pointing to possible inconsistency in ad or campaign performance.
-
--[Q4] Pageviews by User Type:
-Purchasers viewed significantly more pages per session than non-purchasers. This suggests that deeper engagement leads to higher conversion.
-
--[Q5] Avg. Transactions per Purchaser (Jul 2017):
-Most users made only one transaction, indicating that repeat purchases are low. Retention or loyalty campaigns could be considered.
-
--[Q6] Avg. Revenue per Session (Jul 2017):
-The average amount spent per session among purchasers was meaningful but left room for upselling or bundle strategies.
-
--[Q7] Co-purchased Products with “Henley”:
-Users who purchased “YouTube Men’s Vintage Henley” also bought several related items. This presents an opportunity for bundling or personalized recommendation.
-
--[Q8] Funnel Drop-offs (Jan–Mar 2017):
+[Q8] Funnel Drop-offs (Jan–Mar 2017):
 While many products were viewed, only a small portion reached “add to cart” and even fewer were purchased. Funnel conversion rates were low (<15%), especially at the purchase stage
 
+## 🔎 Final
 
+## ✅ What I learned from this project:
+- SQL Skills:
+
+  + Gained confidence using complex queries with JOIN, CTE, UNNEST, CASE, and aggregation functions like COUNT, SUM, AVG, and ROUND.
+
+  + Get more comfortable handling nested and repeated fields in BigQuery (e.g., hits, product, eCommerceAction).
+
+- Cohort & Funnel Analysis Techniques:
+
+  + Learned how to map user behavior across stages from product view → add to cart → purchase
+ 
+  + Developed the ability to compute and compare conversion rates over time and by product
+ 
+ - Marketing Data Storytelling
+
+  + Practiced turning raw data into actionable business insights.
+
+  + Learned how to write clear, logical conclusions based on quantitative analysis.
+
+## 📊 Key Marketing Analytics Dimensions I Focused On:
+
+-Traffic Quality
+
+→ Evaluated traffic sources (Google, Direct, Social, etc.) using bounce rate, session count, and revenue contribution.
+
+-User Behavior
+
+→ Compared engagement metrics between purchasers and non-purchasers (pageviews, drop-off rate, interaction depth).
+
+-Conversion Funnel
+
+→ Measured step-by-step conversion rates from product view to cart to final purchase, identifying where users drop off.
+
+-Product & Revenue Performance
+→ Tracked revenue by traffic source and time (weekly/monthly)
