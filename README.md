@@ -1,6 +1,6 @@
 # E-commerce-User-Behavior-Analyst-SQL-Project
 
-<img width="980" height="980" alt="image" src="https://github.com/user-attachments/assets/06974c99-d43a-484a-bf31-c83d7a8c01bc" />
+<img width="480" height="360" alt="image" src="https://github.com/user-attachments/assets/72b175e6-ec15-4a9f-86f8-cd6026e474d2" />
 
 Author: Đỗ Hoàng Minh
 
