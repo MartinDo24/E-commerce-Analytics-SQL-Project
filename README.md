@@ -1,4 +1,4 @@
-# E-commerce-User-Behavior-Analyst-SQL-Project
+# Analyze Monthly Sales Performance to Identify Best-Selling Products – Retail E-commerce | SQL
 
 <img width="480" height="360" alt="image" src="https://github.com/user-attachments/assets/72b175e6-ec15-4a9f-86f8-cd6026e474d2" />
 
