@@ -8,7 +8,7 @@ Date: 2025-04-25
 
 Tools Used: SQL (BigQuery)
 
-##📑 Table of Contents:
+## 📑 Table of Contents:
 
 1.[📌Background & Overview](#-background--overview)
 
@@ -34,9 +34,9 @@ Tools Used: SQL (BigQuery)
 
 ### 👤 Who is this project for? 
 
--Decision-makers & ecommerce stakeholders looking to improve traffic efficiency and sales performance.
+- Decision-makers & ecommerce stakeholders looking to improve traffic efficiency and sales performance.
 
--Data analysts & business analysts want to analyze user behavior and conversion metrics
+- Data analysts & business analysts want to analyze user behavior and conversion metrics
 
 ## 📂 Dataset Description & Data Structure
 
@@ -52,15 +52,7 @@ Tools Used: SQL (BigQuery)
 
 -Main Table: ga_sessions_2017*
 
--Table used:
-
-+ totals
-
-+ product
-
-+ fullVisitorId
-
-+ hits
+-Table used: totals, product, fullVisitorId,hits
 
 #### 2️⃣ Table Schema & Data Snapshot
 
@@ -83,7 +75,7 @@ Table : ga_sessions_2017* (from BigQuery public dataset)
 
 ## ⚒️ Main Process :
 
-1️⃣ Data Cleaning & Preprocessing
+## 1️⃣ Data Cleaning & Preprocessing
 
 -Filtered sessions from relevant time periods (Jan–Jul 2017).
 
@@ -91,7 +83,7 @@ Table : ga_sessions_2017* (from BigQuery public dataset)
 
 -Used UNNEST() to flatten nested fields (hits, product, eCommerceAction).
 
-2️⃣ Exploratory Data Analysis (EDA)
+## 2️⃣ Exploratory Data Analysis (EDA)
 
 -Aggregated key metrics such as total visits, pageviews, transactions, and revenue.
 
@@ -99,7 +91,7 @@ Table : ga_sessions_2017* (from BigQuery public dataset)
 
 -Calculated conversion funnel rates and bounce rate per traffic source
 
-3️⃣ SQL Analysis
+## 3️⃣ SQL Analysis
 
 -Wrote 8 SQL queries to answer key business questions.
 
@@ -109,47 +101,55 @@ Table : ga_sessions_2017* (from BigQuery public dataset)
 
 ## Task 1: Calculate total visit, pageview, transaction for Jan, Feb and March 2017 
 
--Queried the ga_sessions_2017* table.
+-Purpose: Help stakeholders assess whether marketing efforts are driving consistent traffic and if that traffic is converting to revenue.
 
--Used FORMAT_DATE() and GROUP BY month to aggregate visit, pageview, and transaction data.
-
--Order by month
-
--Traffic & Transaction Trends: Help stakeholders assess whether marketing efforts are driving consistent traffic and if that traffic is converting to revenue.
-
-<img width="519" height="153" alt="image" src="https://github.com/user-attachments/assets/fded5980-6e89-4af4-bc71-28ea1573c752" />
-
+```
+SELECT 
+    format_date('%Y%m',parse_date('%Y%m%d',date)) as month, 
+    sum(totals.visits) as visits,
+    sum(totals.pageviews) as pageviews,
+    sum(totals.transactions) as transactions
+ FROM `bigquery-public-data.google_analytics_sample.ga_sessions_2017*`
+ where extract (month from parse_date('%Y%m%d',date)) in (1,2,3) 
+ group by month 
+ order by month
+```
 
 <img width="651" height="109" alt="image" src="https://github.com/user-attachments/assets/5d05f130-89d1-4d46-995b-e356b42bd5fc" />
 
-[Q1] Traffic & Transactions Trend (Jan–Mar 2017):
+- Insight
 
-Website traffic remained relatively stable across Q1 2017, with visits and pageviews peaking in March.
++ Website traffic remained relatively stable across Q1 2017, with visits and pageviews peaking in March.
 
-Transactions rose significantly in March (+35% vs February), indicating an improvement in conversion efficiency despite modest traffic growth.
++ Transactions rose significantly in March (+35% vs February), indicating an improvement in conversion efficiency despite modest traffic growth.
 
 ## Task 2: Bounce rate per traffic source in July 2017
 
--Bounce rate measures the percentage of sessions where users landed on the website but left without interacting (e.g., viewing only one page).
+- Bounce rate measures the percentage of sessions where users landed on the website but left without interacting (e.g., viewing only one page).
 A high bounce rate can indicate poor landing page relevance, weak content, or targeting the wrong audience.
 
--Bounce_rate = num_bounce/total_visit
+- Purpose: Find sources have most bounce rates 
 
--Used COUNT(totals.visits) and SUM(totals.bounces) to compute bounce rate by source
-
--Grouped by trafficSource.source, ordered by number of visits in descending order
-
-<img width="613" height="139" alt="image" src="https://github.com/user-attachments/assets/5341b990-a3c6-40a9-ae5d-5984b7adba2b" />
-
+```
+SELECT 
+  trafficSource.source,
+  count (totals.visits) as totals_visits,
+  sum(totals.bounces) as total_no_of_bounces,
+  round (count (totals.bounces) / count(totals.visits) *100.0,3) as bounce_rate
+ FROM `bigquery-public-data.google_analytics_sample.ga_sessions_201707*` 
+ group by trafficSource.source
+ order by totals_visits desc
+```
 
 <img width="643" height="246" alt="image" src="https://github.com/user-attachments/assets/d2b0cf70-2805-435a-a0e5-ced318529561" />
 
 <img width="630" height="238" alt="image" src="https://github.com/user-attachments/assets/ba4e642a-5ae3-4f62-a15c-6e4494e08031" />
 
-[Q2] Bounce Rate by Source (Jul 2017):
-Google and Direct brought the most traffic with moderate bounce rates (~51% and 43%).
+- Insight:
 
-YouTube had high traffic but a high bounce rate (66.7%) → low engagement.
++ Google and Direct brought the most traffic with moderate bounce rates (~51% and 43%).
+
++ YouTube had high traffic but a high bounce rate (66.7%) → low engagement.
 
 Several sources like DuckDuckGo, Ask, and productforums.google.com had very high bounce rates (>80%) → likely poor traffic quality or irrelevant landing pages.
 
@@ -158,146 +158,275 @@ Reddit and Mail traffic showed strong engagement with low bounce rates (<30%).
 
 ## Task 3: Revenue by traffic source by week, by month in June 2017
 
--Accessed hits.product.productRevenue using UNNEST(hits) and UNNEST(product)
 
--Used FORMAT_DATE() to group by week and month
+```
+select *            
+from                  --SUBQUERY ĐỂ ĐẶT ĐIỀU KIỆN THỨ TỰ--
+(SELECT                --TÍNH REVENUE THEO THÁNG--
+  'Month' AS time_type,
+  FORMAT_DATE('%Y%m', PARSE_DATE('%Y%m%d', date)) AS time_month,
+  trafficSource.source,
+ sum(product.productRevenue)/1000000 as revenue
+FROM `bigquery-public-data.google_analytics_sample.ga_sessions_201706*`,
+unnest(hits) hits,
+unnest(hits.product) product
+where product.productRevenue is not null
+group by trafficSource.source,time_month,time_type
 
--Combined both weekly and monthly outputs using UNION ALL
+UNION ALL             --GỘP CẢ 2 LẠI 
 
-<img width="529" height="419" alt="image" src="https://github.com/user-attachments/assets/7793b00e-2646-45de-8186-81c7527ef77a" />
+SELECT                --TÍNH REVENUE THEO TUẦN 
+  'week' AS time_type,
+  FORMAT_DATE('%Y%W', PARSE_DATE('%Y%m%d', date)) AS time_week,
+  trafficSource.source,
+ sum(product.productRevenue)/1000000 as revenue
+FROM `bigquery-public-data.google_analytics_sample.ga_sessions_201706*`,
+unnest(hits) hits,
+unnest(hits.product) product
+where product.productRevenue is not null
+group by trafficSource.source,time_type,time_week)
+order by revenue desc
+```
 
 <img width="785" height="235" alt="image" src="https://github.com/user-attachments/assets/08efe326-3820-4436-92b1-35650375c38e" />
 
 <img width="784" height="237" alt="image" src="https://github.com/user-attachments/assets/ba74316e-395b-4f9e-836a-0466ab25e71f" />
 
-[Q3] Revenue by Source (Jun 2017):
+- Insight
+  
++ (direct) traffic was the dominant source, generating over $97,000 in June, accounting for the majority of weekly revenue.
 
-(direct) traffic was the dominant source, generating over $97,000 in June, accounting for the majority of weekly revenue.
++ Google was the second-highest source (~$18,757), showing consistent but lower contribution.
 
-Google was the second-highest source (~$18,757), showing consistent but lower contribution.
++ Other sources like dfa and mail.google.com contributed moderately, with occasional weekly spikes.
 
-Other sources like dfa and mail.google.com contributed moderately, with occasional weekly spikes.
-
-Long-tail sources (e.g., bing, youtube.com, dealspotr.com) generated minimal revenue, showing limited commercial impact.
++ Long-tail sources (e.g., bing, youtube.com, dealspotr.com) generated minimal revenue, showing limited commercial impact.
 
 
 ## Task 4: Average number of pageviews by purchaser type (purchasers vs non-purchasers) in June, July 2017.
 
--Created two CTEs: one for purchasers (productRevenue IS NOT NULL) and one for non-purchasers (transactions IS NULL).
+- Purpose: filter out average non-purchase and purchase of pageviews in June and July 2017
 
--Calculated SUM(pageviews) / COUNT(DISTINCT fullVisitorId) for both types.
+```
+with purchase as --Tính purchase  
+(SELECT 
+count (distinct fullVisitorId) as user,
+sum(totals.pageviews) as page_view,
+ Format_date ('%Y%m',parse_date('%Y%m%d', date)) as month
+ FROM `bigquery-public-data.google_analytics_sample.ga_sessions_2017*`,
+ unnest(hits) hits,
+unnest(hits.product) product
+where product.productRevenue is not null
+and totals.transactions >=1
+and extract(month FROM parse_date('%Y%m%d', date)) in (6,7)
+group by month),
 
--Joined both CTEs to compare.
-
-
-<img width="547" height="521" alt="image" src="https://github.com/user-attachments/assets/88aa7ea4-c60f-4252-94cd-c8a48a179931" />
+non_purchase as --Tính non-purchase   
+(SELECT 
+count (distinct fullVisitorId) as user,
+ sum(totals.pageviews) as page_view,
+ Format_date ('%Y%m',parse_date('%Y%m%d', date)) as month
+ FROM `bigquery-public-data.google_analytics_sample.ga_sessions_2017*`,
+ unnest(hits) hits,
+unnest(hits.product) product
+where product.productRevenue is null
+and totals.transactions is null 
+and extract(month FROM parse_date('%Y%m%d', date)) in (6,7)
+group by month)
+select   --Tính avg purchase and non-purchase
+purchase.month as month,
+  (purchase.page_view/purchase.user) as avg_pageviews_purchase,
+  (non_purchase.page_view/non_purchase.user) as avg_pageviews_non_purchase
+from purchase 
+left join non_purchase
+on purchase.month=non_purchase.month
+```
 
 
 <img width="509" height="74" alt="image" src="https://github.com/user-attachments/assets/897694af-489b-43c3-a3d2-f87f63225284" />
 
-[Q4] Pageviews by User Type:
+-Insight
 
-Non-purchasers viewed 3x more pages than purchasers in both months.
++ Non-purchasers viewed 3x more pages than purchasers in both months.
 
-This suggests users are actively browsing but not converting, indicating possible issues in product offering, pricing, or checkout flow.
++ This suggests users are actively browsing but not converting, indicating possible issues in product offering, pricing, or checkout flow.
 
 ## Task 5:  Average number of transactions per user that made a purchase in July 2017
 
--Filtered sessions with purchases.
+-Purpose: Caculate averagne number of transactions was be made in July 2017
 
--Calculated total transactions and number of unique purchasing users.
-
--Divided transactions / users.
-
-
-<img width="526" height="227" alt="image" src="https://github.com/user-attachments/assets/fc5013ca-29f7-4e82-9a62-6058f9750012" />
+```
+select 
+month, 
+trans/user as Avg_total_transactions_per_user
+from
+(SELECT  --Tạo số lượng để tính avg lượt giao dịch của mội user vào T7--
+  format_date ('%Y%m',parse_date('%Y%m%d', date)) as month,
+      count(distinct fullVisitorId ) as user,
+      sum(totals.transactions) as trans
+FROM `bigquery-public-data.google_analytics_sample.ga_sessions_2017*`,
+unnest(hits) hits,
+unnest(hits.product) product
+where product.productRevenue is not null
+and extract(month FROM parse_date('%Y%m%d',date)) =7
+group by month)
+```
 
 <img width="385" height="48" alt="image" src="https://github.com/user-attachments/assets/d7a5db63-6d37-49a9-b277-8752a923e89a" />
 
-[Q5] Avg. Transactions per Purchaser (Jul 2017):
+- Insight 
 
-Each purchaser made 4.16 transactions on average in July 2017.
++ Each purchaser made 4.16 transactions on average in July 2017.
 
-This reflects strong purchase intent and potentially high-value users — indicating an opportunity to build loyalty and retention programs around these buyers.
++ This reflects strong purchase intent and potentially high-value users — indicating an opportunity to build loyalty and retention programs around these buyers.
 
 
 
 ## Task 6: : Average amount of money spent per session. Only include purchaser data in July 2017
 
--Filtered sessions where productRevenue IS NOT NULL.
-
--Divided total revenue by total visits within July.
-
--Used a subquery to simplify calculation and return 1 row per month.
-
 - This metric indicates how much revenue is generated on average per session from users who actually made purchases.
 
--It helps assess the monetary value of each converting session, which is useful for budgeting paid traffic, setting CPA goals, or forecasting revenue.
+- It helps assess the monetary value of each converting session, which is useful for budgeting paid traffic, setting CPA goals, or forecasting revenue.
 
-<img width="567" height="197" alt="image" src="https://github.com/user-attachments/assets/052f8498-7c68-4e14-aa5b-c78af18a9a6b" />
+```
+SELECT  
+    FORMAT_DATE('%Y%m', PARSE_DATE('%Y%m%d', date)) AS month,
+    (SELECT 
+        round((SUM(product.productRevenue) / SUM(totals.visits)) / 1000000,2)
+     FROM `bigquery-public-data.google_analytics_sample.ga_sessions_201707*`,
+     UNNEST(hits) hits,
+     UNNEST(hits.product) product 
+     WHERE product.productRevenue IS NOT NULL
+     AND totals.transactions IS NOT NULL) AS avg_revenue_by_user_per_visit
+FROM `bigquery-public-data.google_analytics_sample.ga_sessions_201707*`  
+WHERE EXTRACT(MONTH FROM PARSE_DATE('%Y%m%d', date)) = 7
+GROUP BY month
+```
 
 <img width="384" height="50" alt="image" src="https://github.com/user-attachments/assets/d6348fa6-ea02-416a-b71b-4443ce32ea55" />
 
-[Q6] Avg. Revenue per Session (Jul 2017):
+- Insight 
 
-On average, each purchasing session generated $43.86 in July 2017.
++ On average, each purchasing session generated $43.86 in July 2017.
 
-This shows strong monetary value per session, which can guide ad spend limits (CPA/CPC), campaign targeting, and product bundling strategies.
++ This shows strong monetary value per session, which can guide ad spend limits (CPA/CPC), campaign targeting, and product bundling strategies.
 
 ## Task 7:  Other products purchased by customers who purchased product "YouTube Men's Vintage Henley" in July 2017. Output should show product name and the quantity was ordered.
 
--Created two CTEs:
+- Purpose: find out number of products purchased
 
-   + One to get all users who purchased the target product.
-   
-   + One to list other products those users purchased.
+```
+with YTB as 
+(SELECT   --Số ng và số lượng mua sản phẩm YouTube Men's Vintage Henley
+fullVisitorId,
+    product.v2ProductName as product,
+    sum(product.productQuantity) as quantity
+FROM `bigquery-public-data.google_analytics_sample.ga_sessions_201707*`,
+UNNEST(hits) AS hits,
+UNNEST(hits.product) AS product
+where product.productRevenue is not null 
+and  product.v2ProductName="YouTube Men's Vintage Henley"
+group by fullVisitorId,product),
 
--Joined both on fullVisitorId and aggregated quantity by product name.
-
-<img width="741" height="503" alt="image" src="https://github.com/user-attachments/assets/22b31a8d-eee5-47ab-af16-b35b61bf2174" />
+other as --Số người và số lượng mua sản phẩm khác
+(SELECT  
+  fullVisitorId,
+   product.v2ProductName as product,
+   sum(product.productQuantity) as quantity
+FROM `bigquery-public-data.google_analytics_sample.ga_sessions_201707*`,
+UNNEST(hits) AS hits,
+UNNEST(hits.product) AS product
+where product.productRevenue is not null
+and   product.v2ProductName NOT IN ("YouTube Men's Vintage Henley")
+group by fullVisitorId,product) 
+select 
+other.product as other_purchased_products,
+sum(other.quantity) as quantity  --Tổng thêm lần nữa vì khi nối thì sql không tổng hợp lại quantity
+from YTB
+left join other
+on YTB.fullVisitorId=other.fullVisitorId
+group by other.product
+order by quantity desc
+```
 
 <img width="386" height="249" alt="image" src="https://github.com/user-attachments/assets/fc3c127b-b51e-4acd-be23-d06e1f165ab4" />
 
 <img width="385" height="247" alt="image" src="https://github.com/user-attachments/assets/31f2d367-3e8a-4796-95b3-4fe17fbae262" />
 
-[Q7] Co-purchased Products with “Henley”:
+- Insight 
 
--Google Sunglasses and hero-themed apparel were most frequently purchased with the YouTube Men’s Vintage Henley.
++ Google Sunglasses and hero-themed apparel were most frequently purchased with the YouTube Men’s Vintage Henley.
 
--This reveals strong product affinity and bundling behavior, suggesting opportunities for:
++ This reveals strong product affinity and bundling behavior, suggesting opportunities for:
 
- + Cross-sell recommendations
+   Cross-sell recommendations
 
- + Bundle discounts
+   Bundle discounts
 
- + "Customers also bought" placements
+   "Customers also bought" placements
 
 ## Task 8: Calculate cohort map from product view to addtocart to purchase in Jan, Feb and March 2017. 
 
--Created three CTEs: one for product views, one for add-to-cart, one for purchases.
-
--Each filtered by eCommerceAction.action_type = 2 / 3 / 6.(hits.eCommerceAction.action_type = '2' is view product page; hits.eCommerceAction.action_type = '3' is add to cart; hits.eCommerceAction.action_type = '6' is purchase)
-
--Joined all three by month and calculated:
-  
-  + add_to_cart_rate = num_add_to_cart / num_product_view
-  
-  + purchase_rate = num_purchase / num_product_view
-
-<img width="543" height="552" alt="image" src="https://github.com/user-attachments/assets/12673f07-07f8-46e7-9997-225bca0a079e" />
-
-<img width="528" height="216" alt="image" src="https://github.com/user-attachments/assets/abaaf22b-4eab-4e69-8d73-d019995f3b06" />
+```
+with pro as
+(SELECT ---Tính num_product_view theo 3 tháng đầu năm---
+      format_date('%Y%m',parse_date('%Y%m%d',date)) as month,
+      count (eCommerceAction.action_type) as num_product_view,
+    FROM `bigquery-public-data.google_analytics_sample.ga_sessions_2017*`,
+    UNNEST(hits) AS hits,
+    UNNEST (hits.product) product
+    where extract (month from parse_date('%Y%m%d',date)) in (1,2,3)
+    and eCommerceAction.action_type='2' 
+    group by month,product.productRevenue
+    order by month)
+,ad as
+(SELECT     ---Tính num_addtocart theo 3 tháng đầu năm---
+      format_date('%Y%m',parse_date('%Y%m%d',date)) as month,
+      count (eCommerceAction.action_type) as num_addtocart,
+    FROM `bigquery-public-data.google_analytics_sample.ga_sessions_2017*`,
+    UNNEST(hits) AS hits,
+    UNNEST (hits.product) product
+    where extract (month from parse_date('%Y%m%d',date)) in (1,2,3)
+    and eCommerceAction.action_type='3'
+    group by month 
+    order by month)
+,pur as
+(SELECT      ---Tính num_purchase theo 3 tháng đầu năm---
+      format_date('%Y%m',parse_date('%Y%m%d',date)) as month,
+      count(eCommerceAction.action_type) as num_purchase,
+    FROM `bigquery-public-data.google_analytics_sample.ga_sessions_2017*`,
+    UNNEST(hits) AS hits,
+    UNNEST (hits.product) product
+    where extract (month from parse_date('%Y%m%d',date)) in (1,2,3)
+    and eCommerceAction.action_type='6'
+    AND product.productRevenue is not null
+    group by month 
+    order by month)
+ 
+ select *,
+  round((num_addtocart/num_product_view) *100.00,2) as add_to_cart_rate,
+  round((num_purchase/num_product_view)*100.00,2) as purchase_rate
+FROM
+(SELECT   --Gộp các bảng lại để subquery tính toán nốt
+    pro.month,
+    pro.num_product_view as num_product_view,
+    ad.num_addtocart as num_addtocart ,
+    pur.num_purchase as num_purchase
+FROM pro
+LEFT JOIN ad ON pro.month = ad.month
+LEFT JOIN pur ON pro.month = pur.month
+ORDER BY pro.month)
+```
 
 <img width="898" height="104" alt="image" src="https://github.com/user-attachments/assets/f62ed06a-32cf-4dc0-a8f5-4f3d58d40a77" />
 
-[Q8] Funnel Drop-offs (Jan–Mar 2017):
+- Insight
+  
++ Conversion rates improved steadily from January to March 2017 at both funnel stages.
 
-- Conversion rates improved steadily from January to March 2017 at both funnel stages.
++ The add-to-cart rate rose from 28.5% → 37.3%, and purchase rate increased from 8.3% → 12.6%, showing better funnel efficiency over time.
 
-- The add-to-cart rate rose from 28.5% → 37.3%, and purchase rate increased from 8.3% → 12.6%, showing better funnel efficiency over time.
-
-- This could reflect improvements in product presentation, targeting, or checkout experience during Q1.
-
++ This could reflect improvements in product presentation, targeting, or checkout experience during Q1.
 
 
 ## 🔎 Final
